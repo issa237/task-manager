@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http'; // Import HttpHeaders
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment.prod';
 import { AuthService } from './auth'; // Import AuthService
 
 export interface Task {
@@ -16,7 +17,7 @@ export interface Task {
 export class TaskService {
   private http = inject(HttpClient);
   private authService = inject(AuthService); // Inject Auth
-  private apiUrl = 'http://127.0.0.1:8000/api/tasks/';
+  private apiUrl = `${environment.apiUrl}/tasks/`;
 
   // Helper to create headers with the token
   private getHeaders() {
