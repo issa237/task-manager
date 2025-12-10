@@ -1,0 +1,181 @@
+<div class="min-h-screen bg-amber-50 p-8 flex flex-col relative">
+
+  <div *ngIf="!showLoginModal" class="absolute top-4 right-8 z-10">
+    <button 
+      (click)="logout()" 
+      class="text-sm text-rose-500 hover:text-rose-700 font-bold px-3 py-1 border border-rose-200 rounded hover:bg-rose-50 transition"
+    >
+      Logout
+    </button>
+  </div>
+
+  <div *ngIf="showLoginModal" class="fixed inset-0 bg-amber-900/40 flex justify-center items-center z-50 backdrop-blur-sm">
+    <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-sm border-t-4 border-amber-400">
+      
+      <h2 class="text-2xl font-bold text-center mb-6 text-amber-600">
+        {{ isRegistering ? 'Create Account' : 'Welcome Back' }}
+      </h2>
+
+      <div *ngIf="authError" class="bg-rose-100 text-rose-600 p-3 rounded mb-4 text-sm text-center border border-rose-200">
+        {{ authError }}
+      </div>
+
+      <div class="space-y-4">
+        <input 
+          [(ngModel)]="username" 
+          type="text" 
+          placeholder="Username" 
+          class="w-full border border-gray-200 p-3 rounded focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition"
+        >
+        <input 
+          [(ngModel)]="password" 
+          type="password" 
+          placeholder="Password" 
+          class="w-full border border-gray-200 p-3 rounded focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition"
+        >
+        
+        <button 
+          *ngIf="!isRegistering" 
+          (click)="onLogin()"
+          class="w-full bg-amber-500 text-white py-3 rounded font-bold hover:bg-amber-600 transition shadow-md"
+        >
+          Login
+        </button>
+
+        <button 
+          *ngIf="isRegistering" 
+          (click)="onRegister()"
+          class="w-full bg-green-500 text-white py-3 rounded font-bold hover:bg-green-600 transition shadow-md"
+        >
+          Sign Up
+        </button>
+      </div>
+
+      <div class="mt-6 text-center text-sm text-gray-500">
+        <span *ngIf="!isRegistering">
+          New here? <a (click)="isRegistering = true; authError = ''" class="text-amber-600 cursor-pointer hover:underline font-bold">Create account</a>
+        </span>
+        <span *ngIf="isRegistering">
+          Already have an account? <a (click)="isRegistering = false; authError = ''" class="text-amber-600 cursor-pointer hover:underline font-bold">Login</a>
+        </span>
+      </div>
+
+    </div>
+  </div>
+
+  <div [class.blur-sm]="showLoginModal" class="transition duration-300">
+    
+    <h1 class="text-3xl font-bold text-amber-500 mb-8 text-center"><span *ngIf="currentUser" class="text-amber-700">{{ currentUser }}'s</span> Task Manager</h1>
+
+    <div class="flex justify-center mb-10">
+      <div class="bg-amber-100 p-2 rounded-lg shadow-md flex gap-2 w-full max-w-lg">
+        <input 
+          [(ngModel)]="newTaskTitle"
+          (keyup.enter)="addTask()"
+          type="text" 
+          placeholder=" + Add a new task..." 
+          class="flex-1 px-4 py-2 outline-none text-gray-700 bg-transparent placeholder-gray-500"
+        >
+        <button 
+          (click)="addTask()"
+          class=" hover:bg-amber-50 text-amber-500 px-6 py-2 rounded-md font-medium transition shadow-sm hover:shadow-md"
+        >
+          Add
+        </button>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-3 sm:grid-cols-1 gap-6 items-start h-full">
+
+      <div 
+        cdkDropList 
+        id="todoList"
+        #todoList="cdkDropList"
+        [cdkDropListData]="todo"
+        [cdkDropListConnectedTo]="[progressList, doneList]"
+        (cdkDropListDropped)="drop($event)"
+        class="bg-rose-200 p-4 rounded-xl shadow-sm min-h-[200px] hover:shadow-md transition"
+      >
+        <h2 class="font-bold text-rose-500 mb-4 px-2 flex justify-between items-center">
+          To Do <span class="bg-rose-400 text-white text-xs px-2 py-1 rounded-full">{{ todo.length }}</span>
+        </h2>
+        <div class="space-y-3 min-h-[50px]">
+          <div 
+            *ngFor="let item of todo; trackBy: trackById" 
+            cdkDrag 
+            class="bg-white rounded-lg shadow-sm shadow-rose-300 border-l-4 border-red-400 cursor-move hover:shadow-md transition flex justify-between overflow-hidden"
+          >
+            <p class="font-medium text-gray-800 items-center flex m-4">{{ item.title }}</p>
+            <button 
+                (click)="deleteTask(item)" 
+                class="text-white font-bold px-3 bg-rose-300 hover:bg-rose-400 min-h-[50px] transition duration-200 flex items-center justify-center">
+                 delete
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div 
+        cdkDropList 
+        id="progressList"
+        #progressList="cdkDropList"
+        [cdkDropListData]="inProgress"
+        [cdkDropListConnectedTo]="[todoList, doneList]"
+        (cdkDropListDropped)="drop($event)"
+        class="bg-orange-200 p-4 rounded-xl shadow-sm min-h-[200px] hover:shadow-md transition"
+      >
+        <h2 class="font-bold text-orange-500 mb-4 px-2 flex justify-between items-center">
+          In Progress <span class="bg-orange-400 text-white text-xs px-2 py-1 rounded-full">{{ inProgress.length }}</span>
+        </h2>
+        <div class="space-y-3 min-h-[50px]">
+          <div 
+            *ngFor="let item of inProgress; trackBy: trackById" 
+            cdkDrag 
+            class="bg-white rounded-lg shadow-sm shadow-orange-300 border-l-4 border-yellow-500 cursor-move hover:shadow-md transition flex justify-between overflow-hidden"
+          >
+            <p class="font-medium text-gray-800 items-center flex m-4">{{ item.title }}</p>
+            <button 
+                (click)="deleteTask(item)" 
+                class="text-white font-bold px-3 bg-orange-300 hover:bg-orange-400 min-h-[50px] transition duration-200 flex items-center justify-center">
+                 delete
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div 
+        cdkDropList 
+        id="doneList"
+        #doneList="cdkDropList"
+        [cdkDropListData]="done"
+        [cdkDropListConnectedTo]="[todoList, progressList]"
+        (cdkDropListDropped)="drop($event)"
+        class="bg-green-200 p-4 rounded-xl shadow-sm min-h-[200px] hover:shadow-md transition"
+      >
+        <h2 class="font-bold text-green-600 mb-4 px-2 flex justify-between items-center">
+          Done <span class="bg-green-500 text-white text-xs px-2 py-1 rounded-full">{{ done.length }}</span>
+        </h2>
+        <div class="space-y-3 min-h-[50px]">
+          <div 
+            *ngFor="let item of done; trackBy: trackById" 
+            cdkDrag 
+            class="bg-white rounded-lg shadow-sm shadow-green-300 border-l-4 border-green-500 cursor-move hover:shadow-md transition flex justify-between overflow-hidden"
+          >
+            <p class="font-medium text-gray-800 items-center flex m-4">{{ item.title }}</p>
+            <button 
+                (click)="deleteTask(item)" 
+                class="text-white font-bold px-3 bg-green-300 hover:bg-green-400 min-h-[50px] transition duration-200 flex items-center justify-center">
+                 delete
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div>
+      <p class="text-center text-amber-500 italic mb-10 md:mt-[200px] sm:mt-[100px] md:text-5xl sm:text-lg h-6 transition-opacity duration-500">
+         "{{ currentQuote }}"
+      </p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,17 @@
+# Ignore Mac/Windows system files
+.DS_Store
+Thumbs.db
+
+# Ignore Python/Django junk
+**/__pycache__/
+*.py[cod]
+db.sqlite3
+.env
+venv/
+.venv/
+backend/venv/
+
+# Ignore Angular/Node junk
+node_modules/
+dist/
+.angular/

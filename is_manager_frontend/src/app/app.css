@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 1. The card while you are dragging it (The "Ghost" itself) */
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 8px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+  background-color: white;
+  padding: 1rem;
+  opacity: 0.9;
+}
+
+/* 2. The empty space left behind in the list */
+.cdk-drag-placeholder {
+  opacity: 0;
+}
+
+/* 3. Smooth animation for the other items moving out of the way */
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* 4. The list itself while items are moving */
+.cdk-drop-list-dragging .cdk-drag {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
