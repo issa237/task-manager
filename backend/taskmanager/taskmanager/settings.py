@@ -124,6 +124,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:4200",
+    "https://task-manager-weld-one.vercel.app/",
 ]
 
 # ... inside settings.py
