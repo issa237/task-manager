@@ -1,21 +1,24 @@
-import { Injectable, inject, PLATFORM_ID } from '@angular/core'; // Import PLATFORM_ID
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment.prod';
-import { isPlatformBrowser } from '@angular/common'; // Import this check
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private http = inject(HttpClient);
-  private apiUrl =  `${environment.apiUrl}/tasks/`;
-  
-  // This helps us know if we are on the Server or the Browser
   private platformId = inject(PLATFORM_ID);
 
+  // 1. Point to the base API url (e.g. 'https://.../api')
+  // REMOVE '/tasks/' from here!
+  private baseUrl = environment.apiUrl; 
+
   login(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}token/`, data).pipe(
+    // 2. Add the specific endpoint here: /token/
+    // Result: https://.../api/token/
+    return this.http.post(`${this.baseUrl}/token/`, data).pipe(
       tap((response: any) => {
         if (response.access && isPlatformBrowser(this.platformId)) {
           localStorage.setItem('access_token', response.access);
@@ -25,7 +28,9 @@ export class AuthService {
   }
 
   register(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}register/`, data);
+    // 3. Add the specific endpoint here: /register/
+    // Result: https://.../api/register/
+    return this.http.post(`${this.baseUrl}/register/`, data);
   }
 
   logout() {
@@ -35,11 +40,10 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    // ONLY check localStorage if we are in the browser
     if (isPlatformBrowser(this.platformId)) {
       return !!localStorage.getItem('access_token');
     }
-    return false; // If on server, assume not logged in
+    return false;
   }
 
   getToken(): string | null {
