@@ -1,6 +1,7 @@
 import { Injectable, inject, PLATFORM_ID } from '@angular/core'; // Import PLATFORM_ID
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
+import { environment } from '../../environments/environment.prod';
 import { isPlatformBrowser } from '@angular/common'; // Import this check
 
 @Injectable({
@@ -8,7 +9,7 @@ import { isPlatformBrowser } from '@angular/common'; // Import this check
 })
 export class AuthService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://127.0.0.1:8000/api/';
+  private apiUrl =  `${environment.apiUrl}/tasks/`;
   
   // This helps us know if we are on the Server or the Browser
   private platformId = inject(PLATFORM_ID);
